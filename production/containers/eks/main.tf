@@ -1,7 +1,6 @@
 ################################################################################
 # Local
 ################################################################################
-
 locals {
   tag = {
     ProjectName = var.name
@@ -72,12 +71,24 @@ resource "aws_security_group_rule" "egress_all" {
 # Cluster
 ################################################################################
 
-# resource "aws_eks_cluster" "this" {
-#   name     = var.cluster_name
-#   role_arn = aws_iam_role.this.arn
-#   version  = var.cluster_version
+resource "aws_eks_cluster" "this" {
+  name     = var.cluster_name
+  role_arn = aws_iam_role.this.arn
+  version  = var.cluster_version
 
-#   vpc_config {
+  vpc_config {
+    subnet_ids = [
+      data.terraform_remote_state.production_vpc.outputs.subnet_id_ap_northeast_2a_public,
+      data.terraform_remote_state.production_vpc.outputs.subnet_id_ap_northeast_2c_public,
+      data.terraform_remote_state.production_vpc.outputs.subnet_id_ap_northeast_2a_private,
+      data.terraform_remote_state.production_vpc.outputs.subnet_id_ap_northeast_2c_private
+    ]
+    endpoint_private_access = true
+    endpoint_public_access  = true
+    public_access_cidrs     = ["0.0.0.0/0"]
+  }
 
-#   }
-# }
+  kubernetes_network_config {
+    service_ipv4_cidr = "192.168.0.0/16"
+  }
+}
