@@ -11,7 +11,7 @@ variable "name" {
 variable "cluster_name" {
   description = "Name of the EKS cluster"
   type        = string
-  default     = "skillup-ap-northeast-2-alpha"
+  default     = "skillup-apne2-alpha"
 }
 
 variable "cluster_version" {

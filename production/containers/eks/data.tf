@@ -1,4 +1,4 @@
-data "terraform_remote_state" "production_vpc" {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -7,4 +7,8 @@ data "terraform_remote_state" "production_vpc" {
     region  = "ap-northeast-2"
     profile = "skillup"
   }
+}
+
+data "aws_kms_key" "this" {
+  key_id = "alias/skillup-key"
 }
