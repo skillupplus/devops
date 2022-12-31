@@ -1,13 +1,4 @@
 terraform {
-  backend "s3" {
-    bucket  = "skillup-terraform-remote-state"
-    key     = "production/containers/eks/terraform.state"
-    region  = "ap-northeast-2"
-    profile = "skillup"
-  }
-}
-
-terraform {
   required_version = ">= 1.3.6"
 
   required_providers {
@@ -15,6 +6,13 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.45"
     }
+  }
+
+  backend "s3" {
+    bucket  = "skillup-terraform-remote-state"
+    key     = "production/containers/eks/terraform.state"
+    region  = "ap-northeast-2"
+    profile = "skillup"
   }
 }
 
