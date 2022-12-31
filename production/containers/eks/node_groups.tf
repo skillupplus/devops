@@ -28,6 +28,11 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   role       = aws_iam_role.node_group.name
 }
 
+resource "aws_iam_role_policy_attachment" "AmazonSSMManagedInstanceCore" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.node_group.name
+}
+
 locals {
   node_group_role_arn = aws_iam_role.node_group.arn
 }
@@ -44,7 +49,7 @@ resource "aws_eks_node_group" "default" {
 
   capacity_type  = "SPOT"
   instance_types = ["t3a.medium"]
-  disk_size      = 20
+  disk_size      = 30
 
   version = var.cluster_version
 
