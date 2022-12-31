@@ -78,7 +78,7 @@ resource "aws_subnet" "public" {
   cidr_block        = each.value
 
   tags = {
-    Name                                          = "${var.name}-production-${each.key}"
+    Name                                          = "${var.name}-production-public-${each.key}"
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                      = 1
   }
@@ -123,7 +123,7 @@ resource "aws_subnet" "private" {
   cidr_block        = each.value
 
   tags = {
-    Name                                          = "${var.name}-production-${each.key}"
+    Name                                          = "${var.name}-production-private-${each.key}"
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
   }

@@ -2,22 +2,10 @@
 # IAM Role
 ################################################################################
 
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    sid     = "EKSClusterAssumeRole"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["eks.${data.aws_partition.current.dns_suffix}"]
-    }
-  }
-}
-
-resource "aws_iam_role" "this" {
+resource "aws_iam_role" "cluster" {
   name               = "${var.name}-eks-role"
   description        = "EKS Cluster iam role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_cluster.json
 
   tags = merge({
     Name = "${var.name}-eks-role"
@@ -28,17 +16,21 @@ resource "aws_iam_role" "this" {
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.this.name
+  role       = aws_iam_role.cluster.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = aws_iam_role.this.name
+  role       = aws_iam_role.cluster.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSVPCResourceController" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-  role       = aws_iam_role.this.name
+  role       = aws_iam_role.cluster.name
+}
+
+locals {
+  cluster_role_arn = aws_iam_role.cluster.arn
 }
 
 ################################################################################
@@ -76,7 +68,7 @@ resource "aws_security_group_rule" "egress_all" {
 
 resource "aws_eks_cluster" "this" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.this.arn
+  role_arn = local.cluster_role_arn
   version  = var.cluster_version
 
   vpc_config {
@@ -112,4 +104,8 @@ resource "aws_eks_cluster" "this" {
     },
     local.tag
   )
+}
+
+locals {
+  cluster_name = aws_eks_cluster.this.name
 }
