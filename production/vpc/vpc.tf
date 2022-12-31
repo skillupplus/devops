@@ -127,11 +127,11 @@ resource "aws_route_table_association" "public" {
 resource "aws_route_table" "private" {
   vpc_id = local.vpc_id
 
-  route {
-    cidr_block           = "0.0.0.0/0"
-    instance_id          = local.nat_instance_id
-    network_interface_id = local.nat_instance_eni_id
-  }
+  # route {
+  #   cidr_block           = "0.0.0.0/0"
+  #   instance_id          = local.nat_instance_id
+  #   network_interface_id = local.nat_instance_eni_id
+  # }
 
   tags = {
     Name = "${var.name}-production-private-rt"

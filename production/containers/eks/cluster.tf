@@ -43,18 +43,29 @@ locals {
 resource "aws_security_group" "cluster" {
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  name = "${var.cluster_name}-cluster"
+  # eks-cluster-sg-skillup-apne2-alpha-1166471036
+  name = "eks-cluster-sg-${var.cluster_name}-cluster"
 
   tags = merge(
     {
-      Name = "${var.cluster_name}-cluster"
+      Name                                        = "${var.cluster_name}-cluster"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
     local.tag
   )
 }
 
+resource "aws_security_group_rule" "ingress_all" {
+  security_group_id = local.cluster_security_group_id
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  self              = true
+}
+
 resource "aws_security_group_rule" "egress_all" {
-  security_group_id = aws_security_group.cluster.id
+  security_group_id = local.cluster_security_group_id
   type              = "egress"
   from_port         = 0
   to_port           = 0
@@ -72,6 +83,7 @@ resource "aws_eks_cluster" "this" {
   version  = var.cluster_version
 
   vpc_config {
+    security_group_ids = [local.cluster_security_group_id]
     subnet_ids = concat(
       data.terraform_remote_state.vpc.outputs.public_subnet_ids,
       data.terraform_remote_state.vpc.outputs.private_subnet_ids
@@ -108,4 +120,30 @@ resource "aws_eks_cluster" "this" {
 
 locals {
   cluster_name = aws_eks_cluster.this.name
+}
+
+################################################################################
+# Addon
+################################################################################
+
+data "aws_eks_addon_version" "vpc_cni" {
+  addon_name         = "vpc-cni"
+  kubernetes_version = var.cluster_version
+  most_recent        = true
+}
+
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name  = local.cluster_name
+  addon_name    = "vpc-cni"
+  addon_version = data.aws_eks_addon_version.vpc_cni.version
+
+
+  resolve_conflicts = "OVERWRITE"
+  configuration_values = jsonencode({
+    env = {
+      # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
+      ENABLE_PREFIX_DELEGATION = "true"
+      WARM_PREFIX_TARGET       = "1"
+    }
+  })
 }

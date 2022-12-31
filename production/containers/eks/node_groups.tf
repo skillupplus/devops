@@ -68,7 +68,8 @@ resource "aws_eks_node_group" "default" {
 
   tags = merge(
     {
-      Name = "${var.cluster_name}-default"
+      Name                                        = "${var.cluster_name}-default"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
     local.tag
   )

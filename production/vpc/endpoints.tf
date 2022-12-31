@@ -1,7 +1,11 @@
 locals {
   vpc_endpoints = {
-    "com.amazonaws.ap-northeast-2.ec2" = "Interface"
-    "com.amazonaws.ap-northeast-2.sts" = "Interface"
+    "com.amazonaws.ap-northeast-2.ec2"     = "Interface"
+    "com.amazonaws.ap-northeast-2.sts"     = "Interface"
+    "com.amazonaws.ap-northeast-2.ecr.api" = "Interface"
+    "com.amazonaws.ap-northeast-2.ecr.dkr" = "Interface"
+    #"com.amazonaws.ap-northeast-2.elasticloadbalancing" = "Interface"
+    #"com.amazonaws.ap-northeast-2.autoscaling" = "Interface"
   }
 
   endpoint_sg_name = "${var.name}-prod-endpoint-sg"
