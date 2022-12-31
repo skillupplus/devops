@@ -28,6 +28,31 @@ locals {
 }
 
 ################################################################################
+# VPC Security
+################################################################################
+
+resource "aws_default_security_group" "this" {
+  vpc_id = local.vpc_id
+
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+locals {
+  default_sg_id = aws_default_security_group.this.id
+}
+
+################################################################################
 # IGW
 ################################################################################
 
@@ -101,6 +126,11 @@ resource "aws_route_table_association" "public" {
 
 resource "aws_route_table" "private" {
   vpc_id = local.vpc_id
+
+  route {
+    cidr_block  = "0.0.0.0/0"
+    instance_id = local.nat_instance_id
+  }
 
   tags = {
     Name = "${var.name}-production-private-rt"
