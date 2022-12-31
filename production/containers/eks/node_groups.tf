@@ -36,35 +36,35 @@ locals {
 # Node Groups
 ################################################################################
 
-# resource "aws_eks_node_group" "default" {
-#   cluster_name    = local.cluster_name
-#   node_group_name = "${var.cluster_name}-default"
-#   node_role_arn   = local.node_group_role_arn
-#   subnet_ids      = data.terraform_remote_state.vpc.outputs.private_subnet_ids
+resource "aws_eks_node_group" "default" {
+  cluster_name    = local.cluster_name
+  node_group_name = "${var.cluster_name}-default"
+  node_role_arn   = local.node_group_role_arn
+  subnet_ids      = data.terraform_remote_state.vpc.outputs.private_subnet_ids
 
-#   capacity_type  = "SPOT"
-#   instance_types = ["t3a.medium"]
-#   disk_size      = 20
+  capacity_type  = "SPOT"
+  instance_types = ["t3a.medium"]
+  disk_size      = 20
 
-#   version = var.cluster_version
+  version = var.cluster_version
 
-#   scaling_config {
-#     desired_size = 1
-#     min_size     = 1
-#     max_size     = 2
-#   }
+  scaling_config {
+    desired_size = 1
+    min_size     = 1
+    max_size     = 2
+  }
 
 
-#   depends_on = [
-#     aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
-#     aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
-#     aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly
-#   ]
+  depends_on = [
+    aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly
+  ]
 
-#   tags = merge(
-#     {
-#       Name = "${var.cluster_name}-default"
-#     },
-#     local.tag
-#   )
-# }
+  tags = merge(
+    {
+      Name = "${var.cluster_name}-default"
+    },
+    local.tag
+  )
+}
