@@ -129,6 +129,7 @@ resource "aws_route_table" "private" {
 
   route {
     cidr_block           = "0.0.0.0/0"
+    instance_id          = local.nat_instance_id
     network_interface_id = local.nat_instance_eni_id
   }
 
