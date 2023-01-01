@@ -102,6 +102,8 @@ resource "aws_subnet" "public" {
   availability_zone = each.key
   cidr_block        = each.value
 
+  map_public_ip_on_launch = true
+
   tags = {
     Name                                          = "${var.name}-production-public-${each.key}"
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
