@@ -38,3 +38,12 @@ resource "aws_vpc_endpoint" "this" {
     aws_security_group.endpoint.id
   ]
 }
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = local.vpc_id
+  service_name      = "com.amazonaws.ap-northeast-2.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids = [
+    aws_route_table.private.id
+  ]
+}
