@@ -13,6 +13,24 @@ resource "aws_iam_role" "node_group" {
   )
 }
 
+resource "aws_iam_role_policy" "LoadBalancerControllerPolicy" {
+  name   = "${var.name}-node-group-alb-policy"
+  role   = aws_iam_role.node_group.id
+  policy = data.aws_iam_policy_document.load_balancer_controller.json
+}
+
+resource "aws_iam_role_policy" "AutoScalerPolicy" {
+  name   = "${var.name}-node-group-as-policy"
+  role   = aws_iam_role.node_group.id
+  policy = data.aws_iam_policy_document.cluster_autoscaler.json
+}
+
+resource "aws_iam_role_policy" "CSIPolicy" {
+  name   = "${var.name}-node-group-csi-policy"
+  role   = aws_iam_role.node_group.id
+  policy = data.aws_iam_policy_document.csi_driver.json
+}
+
 resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.node_group.name
